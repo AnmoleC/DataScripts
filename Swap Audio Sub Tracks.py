@@ -20,18 +20,20 @@ else:
 
 lines = output.split('\n')
 
-vStreams, aStreams, sStreams, oStreams = 0, 0, 0, 0
+vStreams, aStreams, sStreams, attachments, oStreams = 0, 0, 0, 0, 0
 
 for line in lines:
      line = line.strip()
      if (line.startswith('Stream')):
          print(line)
-         if ('Video' in line):
+         if ('Video:' in line):
              vStreams+=1
-         elif ('Audio' in line):
+         elif ('Audio:' in line):
              aStreams+=1
-         elif ('Subtitle' in line):
+         elif ('Subtitle:' in line):
              sStreams+=1
+         elif ('Attachment:' in line):
+             attachments+=1
          else:
              oStreams+=1
 
@@ -39,6 +41,7 @@ print('-------------------------------------')
 print(str(vStreams) + " video streams found")
 print(str(aStreams) + " audio streams found")
 print(str(sStreams) + " subtitle streams found")
+print(str(attachments) + " attachments")
 print(str(oStreams) + " other streams found")
 print('-------------------------------------')
 
@@ -74,6 +77,10 @@ elif sStreams >=2:
     command += ' -disposition:s:0 default -disposition:s:1 0'
 for x in range(2, sStreams):
     command += ' -map 0:s:'+str(x)
+
+#map attachment streams next
+if (attachments != 0):
+    command += ' -map 0:t'
 
 #only need to mux, not encode
 command += ' -c copy'
